@@ -43,7 +43,7 @@ $(function loadTransit() {
       apikey: "1685d8f3-3277-401d-8b2b-140a9fe4fc82",
     };
     $.ajax({
-      url: "./marta_proxy.php?" + $.param(params),
+      url: "./xhr_proxy.php?" + $.param(params),
       beforeSend: function (xhrObj) {
         console.log("fetching data...");
         // Request headers
