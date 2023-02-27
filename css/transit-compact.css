@@ -1,0 +1,166 @@
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#transit-data {
+  /* position: absolute; */
+  /* top: 732px; */
+  /* left: 185px; */
+  font-weight: 100;
+  z-index: 5;
+  width: 1100px;
+  font-size: 22px;
+  font-family: "Gotham Rounded", "Calibri", sans-serif;
+  text-align: center;
+  font-weight: bold;
+  background-color: #ececec;
+  display: table;
+  /* border-top:solid #000 2px; */
+  /* height:148px; */
+}
+.platformGroup {
+  display: table;
+  width: 100%;
+}
+
+div.table {
+  width: 50%;
+  display: table-column;
+  float: left;
+  margin-bottom: 0;
+}
+.table > div {
+  /* float:left; */
+  border-bottom: solid #fafafa 1px;
+  border-left: solid #fafafa 1px;
+  padding: 3.5px 5px;
+  text-align: left;
+}
+.table > div:last-child {
+  border-bottom: none;
+}
+.table:first-child > div {
+  border-left: none;
+}
+.transitHeader {
+  background-image: url(../assets/brand.png);
+  background-repeat: no-repeat;
+  background-position: 10px 10px;
+  height: 52px;
+}
+.transitHeader > span {
+  display: inline-flex;
+  align-items: center;
+  float: right;
+  padding-right: 10px;
+  height: inherit;
+  font-size: 1.5em;
+  color: #231f20;
+}
+.stationName {
+  background-color: #231f20;
+  padding: 5px 5px;
+  /* border-right:solid #000 2px; */
+  /* border-left:solid #000 2px; */
+  font-size: 1.5em;
+  color: #fff;
+  /* margin-bottom:2px; */
+  /* float:left; */
+  /* width:35%; */
+  text-align: center;
+}
+.platformSeperator {
+  background-color: #555555;
+  padding: 8px 5px;
+  width: 40%;
+}
+.trainLine {
+  width: 30%;
+  padding: 8px 5px;
+}
+.destinationName {
+  float: left;
+}
+.trainLabel {
+  height: 32px;
+  cursor: default;
+  border: none;
+  display: inline-flex;
+  outline: none;
+  padding: 0;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 16px;
+  justify-content: center;
+  text-decoration: none;
+  background-color: #c0c0c0;
+  padding-right: 20px;
+}
+.trainLabel > span.circle {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  /* font-size: 1.25rem; */
+  align-items: center;
+  flex-shrink: 0;
+  color: #fff;
+  user-select: none;
+  border-radius: 50%;
+  justify-content: center;
+}
+.trainLabel > span.RED {
+  background-color: #c60c30;
+}
+.trainLabel > span.GOLD {
+  background-color: #ffa700;
+}
+.trainLabel > span.destination {
+  margin-left: 4px;
+  color: #111;
+}
+.arrivalTime {
+  float: right;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  color: #111;
+}
+.clearfix:before,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  zoom: 1; /* ie 6/7 */
+}
+
+.RED {
+  /* background-color: #C60C30; */
+}
+.GOLD {
+  /* background-color:#ffa700; */
+}
+
+.label {
+  margin-right: 2px;
+  /* margin-top:1px; */
+  float: left;
+  padding: 2px;
+  box-sizing: border-box;
+  border-radius: 1px;
+  border: solid #ccc 1px;
+}
+.stationName span.name {
+  float: right;
+  padding: 2px;
+}
