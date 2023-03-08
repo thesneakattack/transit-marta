@@ -11,7 +11,7 @@
   /* left: 185px; */
   font-weight: 100;
   z-index: 5;
-  width: 400px;
+  width: 380px;
   font-size: 22px;
   font-family: "Gotham Rounded", "Calibri", sans-serif;
   /* text-align: center; */
@@ -190,15 +190,22 @@ div.table {
   font-size: 16px;
 }
 .directionDestination {
-  font-variant: small-caps;
-  font-size: 12px;
+  font-weight: 500;
+  /* font-variant: small-caps; */
+  /* font-size: 12px;
+   */
 }
 .via {
   font-size: 12px;
+  line-height: 1;
 }
 .headsignHeader {
   /* float: left; */
   display: inline-block;
+}
+.directionBody.multi .headsignInfo {
+  font-size: 18px;
+  line-height: 1;
 }
 .headsignInfo {
   font-weight: 500;
@@ -215,5 +222,9 @@ div.table {
   color: #111;
   padding-left: 10px;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
+}
+.arrivalTime .min {
+  font-variant: small-caps;
+  font-size: 14px;
 }

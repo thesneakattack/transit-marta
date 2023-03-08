@@ -24,6 +24,7 @@ function predictionsByStop(predictions) {
   let stopDetails = [];
   let relatedInfo = {};
   let details = [];
+
   relatedData.forEach((relation) => {
     if (relation.type === "route") {
       routeDetails[relation.id] = relation.attributes;
@@ -46,8 +47,12 @@ function predictionsByStop(predictions) {
     const trip_id = prediction.relationships.trip.data.id;
     const headsign_name = details[trip_id].attributes.headsign;
     // console.log(headsign_name);
-
     prediction.trip_details = details[trip_id];
+
+    let nowTime = moment().format();
+    let arrivalTime = moment(prediction.attributes.arrival_time);
+    let arrivalSeconds = arrivalTime.diff(nowTime, "seconds");
+
     let stop = groupedData[stop_id];
     if (!stop) {
       stop = {
@@ -61,11 +66,15 @@ function predictionsByStop(predictions) {
     if (!route) {
       route = {
         directions: [],
-        all_vehicles: [],
+        vehicles: [],
       };
       groupedData[stop_id][route_id] = route;
     }
-    route.all_vehicles.push(prediction);
+    if (prediction.attributes.departure_time !== null) {
+      if (arrivalSeconds > 0) {
+        route.vehicles.push(prediction);
+      }
+    }
     let direction = route.directions[direction_id];
     if (!direction) {
       direction = {
@@ -78,7 +87,9 @@ function predictionsByStop(predictions) {
       groupedData[stop_id][route_id].directions[direction_id] = direction;
     }
     if (prediction.attributes.departure_time !== null) {
-      route.directions[direction_id].vehicles.push(prediction);
+      if (arrivalSeconds > 0) {
+        route.directions[direction_id].vehicles.push(prediction);
+      }
     }
     // console.log(prediction.trip_details.id);
     // console.log(prediction.relationships.trip.data.id);
@@ -93,9 +104,6 @@ function predictionsByStop(predictions) {
       ] = headsign;
     }
     if (prediction.attributes.departure_time !== null) {
-      let nowTime = moment().format();
-      let arrivalTime = moment(prediction.attributes.arrival_time);
-      let arrivalSeconds = arrivalTime.diff(nowTime, "seconds");
       if (arrivalSeconds > 0) {
         route.directions[direction_id].headsigns[headsign_name].vehicles.push(
           prediction
@@ -142,7 +150,7 @@ function predictionsByStop(predictions) {
   return groupedData;
 }
 
-function buildLayout(stops) {
+function renderPredictionData(stops) {
   $("#transit-data").empty();
   var transitHeader =
     '<div class="transitHeader"><span>' +
@@ -170,9 +178,9 @@ function buildLayout(stops) {
       $(stopName).appendTo(stopElement + " .stopHeader");
       //loop through routes
       stop.routes.forEach(function (route) {
-        console.log(route.details.attributes.color);
         let routeElement = stopElement + " .route." + route.route_id;
-        if (!$(routeElement).length) {
+        console.log(route);
+        if (!$(routeElement).length && route.predictions.vehicles.length > 0) {
           let routeColor = "#" + route.details.attributes.color;
           let routeHeader = `<div class="routeHeader"></div>`;
           let routeBody = `<div class="routeBody"></div>`;
@@ -194,11 +202,20 @@ function buildLayout(stops) {
         route.predictions.directions.reverse();
         //loop through loop through directions
         route.predictions.directions.forEach(function (direction) {
+          let headsignCount = direction.headsigns.length;
+          let multiHeadsignClass = "";
+
           let directionElement =
             routeElement + " .direction." + direction.direction_id;
-          if (!$(directionElement).length) {
+          if (!$(directionElement).length && direction.vehicles.length > 0) {
             let directionHeader = `<div class="directionHeader"></div>`;
             let directionBody = `<div class="directionBody"></div>`;
+            let directionName =
+              `<div class="directionName">` + direction.name + `</div>`;
+            let directionDestination =
+              `<div class="directionDestination">` +
+              direction.destination +
+              `</div>`;
             let directionContainer =
               `<div class="direction ` +
               direction.direction_id +
@@ -207,21 +224,22 @@ function buildLayout(stops) {
               directionBody +
               `</div>`;
             $(directionContainer).appendTo(routeElement + " .routeBody");
-            let directionName =
-              `<span class="directionName">` + direction.name + `</span>`;
-            let directionDestination =
-              `<span class="directionDestination"> to ` +
-              direction.destination +
-              `</span>`;
+
             $(directionName).appendTo(directionElement + " .directionHeader");
+            // if headsignCount > 1, include destination name, otherwise hide
+            if (headsignCount > 1) {
+              $(directionDestination).appendTo(
+                directionElement + " .directionHeader"
+              );
+              $(directionElement + " .directionBody").addClass("multi");
+            }
           }
-          // console.log(direction);
+
           direction.headsigns.forEach(function (headsign, index) {
-            let headsignElement = directionElement + " .headsign." + index;
+            let headsignElement =
+              directionElement + " .headsign." + index + multiHeadsignClass;
 
-            if (!$(headsignElement).length) {
-              // console.log(headsignElement);
-
+            if (!$(headsignElement).length && headsign.vehicles.length > 0) {
               let headsignHeader = `<div class="headsignHeader"></div>`;
               let headsignBody = `<div class="headsignBody"></div>`;
               let headsignContainer =
@@ -234,12 +252,13 @@ function buildLayout(stops) {
               $(headsignContainer).appendTo(
                 directionElement + " .directionBody"
               );
-              // let headsignName;
+
               let headsignHTML = printHeadsign(headsign.name);
               let headsignInfo =
                 `<div class="headsignInfo">` + headsignHTML + `</div>`;
               $(headsignInfo).appendTo(headsignElement + " .headsignHeader");
               console.log(headsign.name, headsign.vehicles);
+
               let arrivalCounter = 0;
               let arrivalLimit = 2;
 
@@ -339,114 +358,6 @@ function emptyInfo(stops) {
     }
   });
 }
-function displayArrivalTimes(stops) {
-  emptyInfo(stops);
-  //loop through stops
-  // stops.forEach(function (stop) {
-  //   let routeInfoContent =
-  //     `<div class="routeInfoContent ` + stop.stop_id + `"></div>`;
-  //   $(routeInfoContent).appendTo("#transit-data");
-  //   let routeInfoHeader =
-  //     `<div class="routeName"><span>` + stop.stop_id + `</span></div>`;
-  //   $(routeInfoHeader).appendTo(".routeInfoContent." + stop.stop_id);
-  //   //loop through routes
-  //   stop.routes.forEach(function (route) {
-  //     //loop through loop through directions
-  //     route.predictions.directions.forEach(function (direction) {
-  //       //loop through loop through vehicles, limit 2 per direction
-  //       direction.vehicles.slice(0, 2).forEach(function (prediction) {
-  //         console.log(prediction);
-  //       });
-  //     });
-  //   });
-  // });
-}
-
-function getStationData(stationId) {
-  var params = {
-    // Request parameters
-    endpoint: "https://api-v3.mbta.com/predictions?",
-    api_key: "762f3ef5fa03489e8c581ee3d1ed129a",
-    sort: "arrival_time",
-    "filter[stop]": "5342",
-  };
-  $.ajax({
-    url: "./xhr_proxy.php?" + $.param(params),
-    beforeSend: function (xhrObj) {
-      console.log("fetching data...");
-      // Request headers
-      // xhrObj.setRequestHeader("api_key","c1fa65ecb69b4ba0a711da5004b4b25b");
-    },
-    timeout: 3000,
-    type: "GET",
-    cache: true,
-    crossdomain: true,
-    dataType: "json",
-    // Request body
-    // data: "{body}",
-  })
-    .done(function (data) {
-      // console.log(data);
-      // DATA SHOULD ALREADY BE SORTED BY WAITING_TIME OR NEXT_ARR (NOT SURE YET)
-      // FILTER RESULT DATA BY STATION NAME
-      var stationData = filterJSON(data, "STATION", stationId);
-      // GROUP DATA BY TRAIN LINES (GOLD, RED, ETC) in lineList
-      var dataByLine = [];
-      lineList.forEach((line) => {
-        line.forEach((element) => {
-          var stationName = element[0];
-          var lineName = element[1];
-
-          // STORE EACH LINE'S DATA IN AN ARRAY FOR ITERATION
-          dataByLine.push(filterJSON(stationData, "LINE", lineName));
-          // EMPTY EACH STATION/LINE'S TABLE BEFORE REFRESHING
-          $(
-            "#transit-data .platformGroup .table." +
-              stationName +
-              "." +
-              lineName
-          ).empty();
-        });
-      });
-      console.log(dataByLine);
-      // ITERATE THROUGH STATION DATA GROUPED BY LINE
-      $(dataByLine).each(function () {
-        var trainEtaData = this;
-        // RESATURATE NESTED TRAIN LINE TABLE
-        $(trainEtaData).each(function () {
-          var train = this;
-          var text =
-            "<div class='trainLabel'><span class='circle " +
-            train.LINE +
-            "'>" +
-            train.DIRECTION +
-            "</span><span class='destination'>" +
-            train.DESTINATION +
-            "</span></div>" +
-            "<div class='arrivalTime'>" +
-            train.WAITING_TIME +
-            "</div>";
-          $('<div class="clearfix">' + text + "</div>").appendTo(
-            "#transit-data .platformGroup .table." +
-              train.STATION.replaceAll(" ", "-") +
-              "." +
-              train.LINE
-          );
-        });
-      });
-
-      setTimeout(function () {
-        getStationData(stationId);
-      }, 20000);
-    })
-    .fail(function () {
-      // $("#outboundData tbody, #inboundData tbody").html("<tr><td colspan='2'>LOADING . . .</td></tr>");
-      console.log("retry");
-      setTimeout(function () {
-        getStationData(stationId);
-      }, 70000);
-    });
-}
 
 function getPredictionData(stopIds) {
   var params = {
@@ -474,19 +385,18 @@ function getPredictionData(stopIds) {
   })
     .done(function (response) {
       let includedData = response.included;
-
-      let predictionData = response;
-      let stopPredictions = predictionsByStop(predictionData);
-      buildLayout(stopPredictions);
+      let predictionData = response.data;
+      if (response.data.length > 0) {
+        let groupedPredictions = predictionsByStop(response);
+        renderPredictionData(groupedPredictions);
+      } else {
+        console.log("No prediction data available", response);
+      }
       // console.log(stopPredictions);
-
-      // displayArrivalTimes(stopPredictions, includedData);
 
       setTimeout(function () {
         getPredictionData(stopIds);
       }, 60000);
-
-      //  setTimeout(loadTransit("40070"), 20000);
     })
     .fail(function (error) {
       setTimeout(function () {
