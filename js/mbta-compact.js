@@ -180,6 +180,7 @@ function renderPredictionData(stops) {
       stop.routes.forEach(function (route) {
         let routeElement = stopElement + " .route." + route.route_id;
         console.log(route);
+        console.log(stops);
         if (!$(routeElement).length && route.predictions.vehicles.length > 0) {
           let routeColor = "#" + route.details.attributes.color;
           let routeHeader = `<div class="routeHeader"></div>`;
