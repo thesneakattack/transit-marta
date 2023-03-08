@@ -11,11 +11,11 @@
   /* left: 185px; */
   font-weight: 100;
   z-index: 5;
-  width: 1100px;
+  width: 400px;
   font-size: 22px;
   font-family: "Gotham Rounded", "Calibri", sans-serif;
-  text-align: center;
-  font-weight: bold;
+  /* text-align: center; */
+  /* font-weight: bold; */
   background-color: #ececec;
   display: table;
   /* border-top:solid #000 2px; */
@@ -47,9 +47,11 @@ div.table {
 }
 .transitHeader {
   background-image: url(../assets/brand.png);
+  background-size: 240px 42px;
   background-repeat: no-repeat;
-  background-position: 10px 10px;
-  height: 52px;
+  background-position: center;
+  /* background-position: 10px 10px; */
+  height: 48px;
 }
 .transitHeader > span {
   display: inline-flex;
@@ -123,13 +125,6 @@ div.table {
   margin-left: 4px;
   color: #111;
 }
-.arrivalTime {
-  float: right;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  color: #111;
-}
 .clearfix:before,
 .clearfix:after {
   content: "";
@@ -163,4 +158,62 @@ div.table {
 .stationName span.name {
   float: right;
   padding: 2px;
+}
+.stop {
+  /* border: solid red 2px; */
+}
+.stopHeader {
+  text-align: center;
+  background-color: #111;
+  padding: 5px 5px;
+}
+.stopName {
+  font-weight: bold;
+  font-variant: small-caps;
+  color: #fff;
+}
+.routeHeader {
+  padding: 4px 5px;
+}
+.routeBody {
+  padding: 0px 5px;
+}
+.routeName {
+  padding: 0px 16px;
+  background-color: #111;
+  border-radius: 32px;
+  color: #fff;
+  font-weight: bold;
+}
+.directionName {
+  font-variant: small-caps;
+  font-size: 16px;
+}
+.directionDestination {
+  font-variant: small-caps;
+  font-size: 12px;
+}
+.via {
+  font-size: 12px;
+}
+.headsignHeader {
+  /* float: left; */
+  display: inline-block;
+}
+.headsignInfo {
+  font-weight: 500;
+}
+.headsignBody {
+  float: right;
+  /* display: inline-block; */
+}
+.arrivalTime {
+  /* float: right; */
+  /* height: 32px; */
+  display: inline-flex;
+  align-items: center;
+  color: #111;
+  padding-left: 10px;
+  font-weight: bold;
+  font-size: 16px;
 }
